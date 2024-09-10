@@ -33,12 +33,11 @@ module.exports = class Hyperswitch {
     this.handlersById = new Map()
     this.handlers = []
 
-    this.currentOffset = this.offset
+    this.currentOffset = this.offset || 0
 
     this.changed = false
     this.initializing = true
     if (switchJson) {
-      console.log('switchJson:', switchJson)
       for (let i = 0; i < switchJson.schema.length; i++) {
         const description = switchJson.schema[i]
         this.register(description.name, description)
@@ -52,10 +51,14 @@ module.exports = class Hyperswitch {
   }
 
   register (fqn, description) {
-    const existingByName = this.handlersByName.get(fqn) || null
+    const existingByName = this.handlersByName.get(fqn)
     const existingById = Number.isInteger(description.id) ? this.handlersById.get(description.id) : null
-    console.log('existing by name:', existingByName, 'existing by id:', existingById)
-    if (existingByName !== existingById) throw new Error('Name/ID mismatch when creating handlers')
+    if (existingByName && existingById) {
+      if (existingByName !== existingById) throw new Error('ID/Name mismatch for handler: ' + fqn)
+      if (Number.isInteger(description.id) && (existingByName.id !== description.id)) {
+        throw new Error('Cannot change the assigned ID for handler: ' + fqn)
+      }
+    }
 
     const type = this.schema.resolve(description.requestType)
     if (!type) throw new Error('Invalid request type')
@@ -64,7 +67,7 @@ module.exports = class Hyperswitch {
       throw new Error('Cannot alter the request type for a handler')
     }
 
-    if (!existingByName && !this.changed) {
+    if (!this.initializing && !existingByName && !this.changed) {
       this.changed = true
       this.version += 1
     }
@@ -78,9 +81,12 @@ module.exports = class Hyperswitch {
       requestType: description.requestType,
       version: Number.isInteger(description.version) ? description.version : this.version
     }
+
     this.handlersById.set(id, handler)
     this.handlersByName.set(fqn, handler)
-    this.handlers.push(handler)
+    if (!existingByName) {
+      this.handlers.push(handler)
+    }
   }
 
   toJSON () {
@@ -102,7 +108,6 @@ module.exports = class Hyperswitch {
         if (err.code !== 'ENOENT') throw err
       }
       const opts = { switchDir: switchJson, schemaDir: schemaJson }
-      console.log('OPTS HERE:', opts)
       if (exists) return new this(schema, JSON.parse(fs.readFileSync(jsonFilePath)), opts)
       return new this(schema, null, opts)
     }
