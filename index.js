@@ -2,11 +2,11 @@ const p = require('path')
 const fs = require('fs')
 const Hyperschema = require('hyperschema')
 
-const generateCode = require('./codegen')
+const generateCode = require('./lib/codegen')
 
 const CODE_FILE_NAME = 'index.js'
 const MESSAGES_FILE_NAME = 'messages.js'
-const SWITCH_JSON_FILE_NAME = 'switch.json' 
+const SWITCH_JSON_FILE_NAME = 'switch.json'
 
 class HyperswitchNamespace {
   constructor (hyperswitch, name) {
@@ -15,13 +15,13 @@ class HyperswitchNamespace {
   }
 
   register (description) {
-    const fqn = '@' + this.name + '/' + description.name 
+    const fqn = '@' + this.name + '/' + description.name
     this.hyperswitch.register(fqn, description)
   }
 }
 
 module.exports = class Hyperswitch {
-  constructor (schema, switchJson, { offset, switchDir = null, schemaDir = null }) {
+  constructor (schema, switchJson, { offset, switchDir = null, schemaDir = null } = {}) {
     this.schema = schema
     this.version = switchJson ? switchJson.version : 0
     this.offset = switchJson ? switchJson.offset : (offset || 0)
@@ -38,9 +38,10 @@ module.exports = class Hyperswitch {
     this.changed = false
     this.initializing = true
     if (switchJson) {
+      console.log('switchJson:', switchJson)
       for (let i = 0; i < switchJson.schema.length; i++) {
         const description = switchJson.schema[i]
-        
+        this.register(description.name, description)
       }
     }
     this.initializing = false
@@ -51,31 +52,31 @@ module.exports = class Hyperswitch {
   }
 
   register (fqn, description) {
-    const existingByName = this.handlersByName.get(fqn)
-    const existingById = Number.isNumber(description.id) ? this.handlersById.get(description.id) : null
+    const existingByName = this.handlersByName.get(fqn) || null
+    const existingById = Number.isInteger(description.id) ? this.handlersById.get(description.id) : null
+    console.log('existing by name:', existingByName, 'existing by id:', existingById)
     if (existingByName !== existingById) throw new Error('Name/ID mismatch when creating handlers')
 
-    const type = this.schema.resolve(description.requestType) 
+    const type = this.schema.resolve(description.requestType)
     if (!type) throw new Error('Invalid request type')
 
     if (existingByName && (existingByName.type !== type)) {
-      throw new Error('Cannot alter the request type for a handler')  
+      throw new Error('Cannot alter the request type for a handler')
     }
 
     if (!existingByName && !this.changed) {
       this.changed = true
       this.version += 1
     }
-      
-    const id = Number.isNumber(description.id) ? description.id : this.currentOffset++  
+
+    const id = Number.isInteger(description.id) ? description.id : this.currentOffset++
 
     const handler = {
       id,
       type,
-      version,
       name: fqn,
       requestType: description.requestType,
-      version: Number.isInteger(description.version) ? description.version : this.version 
+      version: Number.isInteger(description.version) ? description.version : this.version
     }
     this.handlersById.set(id, handler)
     this.handlersByName.set(fqn, handler)
@@ -85,13 +86,13 @@ module.exports = class Hyperswitch {
   toJSON () {
     return {
       version: this.version,
-      schema: this.handlers.map(({ type, ...h}) => h) 
+      schema: this.handlers.map(({ type, ...h }) => h)
     }
   }
 
   static from (schemaJson, switchJson) {
     const schema = Hyperschema.from(schemaJson)
-    if (typeof dbJson === 'string') {
+    if (typeof switchJson === 'string') {
       const jsonFilePath = p.join(p.resolve(switchJson), SWITCH_JSON_FILE_NAME)
       let exists = false
       try {
@@ -101,6 +102,7 @@ module.exports = class Hyperswitch {
         if (err.code !== 'ENOENT') throw err
       }
       const opts = { switchDir: switchJson, schemaDir: schemaJson }
+      console.log('OPTS HERE:', opts)
       if (exists) return new this(schema, JSON.parse(fs.readFileSync(jsonFilePath)), opts)
       return new this(schema, null, opts)
     }

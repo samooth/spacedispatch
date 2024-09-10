@@ -23,5 +23,10 @@
   "devDependencies": {
     "brittle": "^3.7.0",
     "standard": "^17.1.0"
+  },
+  "dependencies": {
+    "generate-string": "^1.0.1",
+    "hyperschema": "^0.0.14",
+    "nanoassert": "^2.0.0"
   }
 }

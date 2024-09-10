@@ -20,10 +20,36 @@ ns1.register({
     }
   ]
 })
+ns1.register({
+  name: 'request2',
+  fields: [
+    {
+      name: 'field1',
+      type: 'string'
+    },
+    {
+      name: 'field2',
+      type: 'uint'
+    }
+  ]
+})
 
 Hyperschema.toDisk(schema)
 
 const hyperswitch = Hyperswitch.from(SCHEMA_DIR, SWITCH_DIR)
-const ns2 = hyperswitch.namespace('example')  
+const ns2 = hyperswitch.namespace('example')
+
+ns2.register({
+  name: 'command1',
+  requestType: '@example/request1'
+})
+ns2.register({
+  name: 'command2',
+  requestType: '@example/request1'
+})
+ns2.register({
+  name: 'command3',
+  requestType: '@example/request2'
+})
 
 Hyperswitch.toDisk(hyperswitch)
