@@ -1,9 +1,27 @@
 {
+  "name": "@holepunchto/hyperswitch",
+  "version": "0.0.0",
+  "description": "Generate operations/endpoints using Hyperschema",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "standard && brittle test/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/holepunchto/hyperswitch.git"
+  },
+  "author": "Holepunch",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/holepunchto/hyperswitch/issues"
+  },
+  "homepage": "https://github.com/holepunchto/hyperswitch#readme",
   "devDependencies": {
     "brittle": "^3.7.0",
     "standard": "^17.1.0"
-  },
-  "dependencies": {
-    "hyperschema": "^0.0.13"
   }
 }

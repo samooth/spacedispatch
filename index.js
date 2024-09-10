@@ -46,6 +46,10 @@ module.exports = class Hyperswitch {
     this.initializing = false
   }
 
+  namespace (name) {
+    return new HyperswitchNamespace(this, name)
+  }
+
   register (fqn, description) {
     const existingByName = this.handlersByName.get(fqn)
     const existingById = Number.isNumber(description.id) ? this.handlersById.get(description.id) : null
