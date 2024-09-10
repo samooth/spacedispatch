@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "brittle": "^3.7.0",
+    "standard": "^17.1.0"
+  },
+  "dependencies": {
+    "hyperschema": "^0.0.13"
+  }
+}
