@@ -47,6 +47,6 @@ test('basic sync switch', async t => {
     t.is(req.str, 'world')
   })
 
-  r.dispatch(dispatch('@test/test-request-1', { id: 10, str: 'hello' }))
-  r.dispatch(dispatch('@test/test-request-2', { id: 20, str: 'world' }))
+  await r.dispatch(dispatch('@test/test-request-1', { id: 10, str: 'hello' }))
+  await r.dispatch(dispatch('@test/test-request-2', { id: 20, str: 'world' }))
 })
