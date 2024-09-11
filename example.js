@@ -1,8 +1,8 @@
 const Hyperschema = require('hyperschema')
-const Hyperswitch = require('.')
+const Hyperdispatch = require('.')
 
 const SCHEMA_DIR = './output/hyperschema'
-const SWITCH_DIR = './output/hyperswitch'
+const DISPATCH_DIR = './output/hyperdispatch'
 
 const schema = Hyperschema.from(SCHEMA_DIR)
 const ns1 = schema.namespace('example')
@@ -36,8 +36,8 @@ ns1.register({
 
 Hyperschema.toDisk(schema)
 
-const hyperswitch = Hyperswitch.from(SCHEMA_DIR, SWITCH_DIR)
-const ns2 = hyperswitch.namespace('example')
+const hyperdispatch = Hyperdispatch.from(SCHEMA_DIR, DISPATCH_DIR)
+const ns2 = hyperdispatch.namespace('example')
 
 ns2.register({
   name: 'command1',
@@ -52,4 +52,4 @@ ns2.register({
   requestType: '@example/request2'
 })
 
-Hyperswitch.toDisk(hyperswitch)
+Hyperdispatch.toDisk(hyperdispatch)
