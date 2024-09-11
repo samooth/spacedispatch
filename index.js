@@ -6,26 +6,26 @@ const generateCode = require('./lib/codegen')
 
 const CODE_FILE_NAME = 'index.js'
 const MESSAGES_FILE_NAME = 'messages.js'
-const SWITCH_JSON_FILE_NAME = 'switch.json'
+const DISPATCH_JSON_FILE_NAME = 'dispatch.json'
 
-class HyperswitchNamespace {
-  constructor (hyperswitch, name) {
-    this.hyperswitch = hyperswitch
+class HyperdispatchNamespace {
+  constructor (hyperdispatch, name) {
+    this.hyperdispatch = hyperdispatch
     this.name = name
   }
 
   register (description) {
     const fqn = '@' + this.name + '/' + description.name
-    this.hyperswitch.register(fqn, description)
+    this.hyperdispatch.register(fqn, description)
   }
 }
 
-module.exports = class Hyperswitch {
-  constructor (schema, switchJson, { offset, switchDir = null, schemaDir = null } = {}) {
+module.exports = class Hyperdispatch {
+  constructor (schema, dispatchJson, { offset, dispatchDir = null, schemaDir = null } = {}) {
     this.schema = schema
-    this.version = switchJson ? switchJson.version : 0
-    this.offset = switchJson ? switchJson.offset : (offset || 0)
-    this.switchDir = switchDir
+    this.version = dispatchJson ? dispatchJson.version : 0
+    this.offset = dispatchJson ? dispatchJson.offset : (offset || 0)
+    this.dispatchDir = dispatchDir
     this.schemaDir = schemaDir
 
     this.namespaces = new Map()
@@ -37,9 +37,9 @@ module.exports = class Hyperswitch {
 
     this.changed = false
     this.initializing = true
-    if (switchJson) {
-      for (let i = 0; i < switchJson.schema.length; i++) {
-        const description = switchJson.schema[i]
+    if (dispatchJson) {
+      for (let i = 0; i < dispatchJson.schema.length; i++) {
+        const description = dispatchJson.schema[i]
         this.register(description.name, description)
       }
     }
@@ -47,7 +47,7 @@ module.exports = class Hyperswitch {
   }
 
   namespace (name) {
-    return new HyperswitchNamespace(this, name)
+    return new HyperdispatchNamespace(this, name)
   }
 
   register (fqn, description) {
@@ -96,10 +96,10 @@ module.exports = class Hyperswitch {
     }
   }
 
-  static from (schemaJson, switchJson) {
+  static from (schemaJson, dispatchJson) {
     const schema = Hyperschema.from(schemaJson)
-    if (typeof switchJson === 'string') {
-      const jsonFilePath = p.join(p.resolve(switchJson), SWITCH_JSON_FILE_NAME)
+    if (typeof dispatchJson === 'string') {
+      const jsonFilePath = p.join(p.resolve(dispatchJson), DISPATCH_JSON_FILE_NAME)
       let exists = false
       try {
         fs.statSync(jsonFilePath)
@@ -107,23 +107,23 @@ module.exports = class Hyperswitch {
       } catch (err) {
         if (err.code !== 'ENOENT') throw err
       }
-      const opts = { switchDir: switchJson, schemaDir: schemaJson }
+      const opts = { dispatchDir: dispatchJson, schemaDir: schemaJson }
       if (exists) return new this(schema, JSON.parse(fs.readFileSync(jsonFilePath)), opts)
       return new this(schema, null, opts)
     }
-    return new this(schema, switchJson)
+    return new this(schema, dispatchJson)
   }
 
-  static toDisk (hyperswitch, switchDir) {
-    if (!switchDir) switchDir = hyperswitch.switchDir
-    fs.mkdirSync(switchDir, { recursive: true })
+  static toDisk (hyperdispatch, dispatchDir) {
+    if (!dispatchDir) dispatchDir = hyperdispatch.dispatchDir
+    fs.mkdirSync(dispatchDir, { recursive: true })
 
-    const messagesPath = p.join(p.resolve(switchDir), MESSAGES_FILE_NAME)
-    const switchJsonPath = p.join(p.resolve(switchDir), SWITCH_JSON_FILE_NAME)
-    const codePath = p.join(p.resolve(switchDir), CODE_FILE_NAME)
+    const messagesPath = p.join(p.resolve(dispatchDir), MESSAGES_FILE_NAME)
+    const dispatchJsonPath = p.join(p.resolve(dispatchDir), DISPATCH_JSON_FILE_NAME)
+    const codePath = p.join(p.resolve(dispatchDir), CODE_FILE_NAME)
 
-    fs.writeFileSync(switchJsonPath, JSON.stringify(hyperswitch.toJSON(), null, 2), { encoding: 'utf-8' })
-    fs.writeFileSync(messagesPath, hyperswitch.schema.toCode(), { encoding: 'utf-8' })
-    fs.writeFileSync(codePath, generateCode(hyperswitch), { encoding: 'utf-8' })
+    fs.writeFileSync(dispatchJsonPath, JSON.stringify(hyperdispatch.toJSON(), null, 2), { encoding: 'utf-8' })
+    fs.writeFileSync(messagesPath, hyperdispatch.schema.toCode(), { encoding: 'utf-8' })
+    fs.writeFileSync(codePath, generateCode(hyperdispatch), { encoding: 'utf-8' })
   }
 }

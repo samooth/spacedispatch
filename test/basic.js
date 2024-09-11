@@ -5,8 +5,8 @@ const { createTestSchema } = require('./helpers')
 test('basic sync switch', async t => {
   t.plan(6)
 
-  const hs = await createTestSchema(t)
-  hs.rebuild({
+  const hd = await createTestSchema(t)
+  hd.rebuild({
     schema: schema => {
       const ns = schema.namespace('test')
       ns.register({
@@ -23,8 +23,8 @@ test('basic sync switch', async t => {
         ]
       })
     },
-    switch: hyperswitch => {
-      const ns = hyperswitch.namespace('test')
+    dispatch: hyperdispatch => {
+      const ns = hyperdispatch.namespace('test')
       ns.register({
         name: 'test-request-1',
         requestType: '@test/request'
@@ -35,7 +35,7 @@ test('basic sync switch', async t => {
       })
     }
   })
-  const { dispatch, Router } = hs.module
+  const { dispatch, Router } = hd.module
 
   const r = new Router()
   r.add('@test/test-request-1', (req, ctx) => {
