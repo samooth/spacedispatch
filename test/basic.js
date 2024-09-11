@@ -3,7 +3,7 @@ const test = require('brittle')
 const { createTestSchema } = require('./helpers')
 
 test('basic sync switch', async t => {
-  t.plan(4)
+  t.plan(6)
 
   const hs = await createTestSchema(t)
   hs.rebuild({
@@ -38,15 +38,17 @@ test('basic sync switch', async t => {
   const { dispatch, Router } = hs.module
 
   const r = new Router()
-  r.add('@test/test-request-1', req => {
+  r.add('@test/test-request-1', (req, ctx) => {
+    t.is(ctx, 'some-context')
     t.is(req.id, 10)
     t.is(req.str, 'hello')
   })
-  r.add('@test/test-request-2', req => {
+  r.add('@test/test-request-2', (req, ctx) => {
+    t.is(ctx, 'another-context')
     t.is(req.id, 20)
     t.is(req.str, 'world')
   })
 
-  await r.dispatch(dispatch('@test/test-request-1', { id: 10, str: 'hello' }))
-  await r.dispatch(dispatch('@test/test-request-2', { id: 20, str: 'world' }))
+  await r.dispatch(dispatch('@test/test-request-1', { id: 10, str: 'hello' }), 'some-context')
+  await r.dispatch(dispatch('@test/test-request-2', { id: 20, str: 'world' }), 'another-context')
 })
