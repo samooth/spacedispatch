@@ -1,6 +1,6 @@
 {
   "name": "hyperdispatch",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Generate operations/endpoints using Hyperschema",
   "main": "index.js",
   "directories": {
