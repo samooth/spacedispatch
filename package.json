@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "description": "Generate operations/endpoints using Hyperschema",
   "main": "index.js",
-  "directories": {
-    "lib": "lib",
-    "test": "test"
-  },
+  "files": [
+    "index.js",
+    "runtime.js",
+    "lib/*.js"
+  ],
   "scripts": {
     "test": "standard && brittle test/index.js"
   },
