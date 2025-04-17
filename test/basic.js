@@ -24,8 +24,8 @@ test('basic sync switch', async t => {
         ]
       })
     },
-    dispatch: hyperdispatch => {
-      const ns = hyperdispatch.namespace('test')
+    dispatch: spacedispatch => {
+      const ns = spacedispatch.namespace('test')
       ns.register({
         name: 'test-request-1',
         requestType: '@test/request'
@@ -73,8 +73,8 @@ test('basic sync switch + offset', async t => {
         ]
       })
     },
-    dispatch: hyperdispatch => {
-      const ns = hyperdispatch.namespace('test')
+    dispatch: spacedispatch => {
+      const ns = spacedispatch.namespace('test')
       ns.register({
         name: 'test-request-1',
         requestType: '@test/request'

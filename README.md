@@ -1,2 +1,2 @@
-# hyperdispatch
-Generate operations/endpoints using Hyperschema
+# spacedispatch
+Generate operations/endpoints using Spaceschema

@@ -1,7 +1,7 @@
-import Hyperdispatch from './builder.cjs'
+import Spacedispatch from './builder.cjs'
 
-class ESMHyperdispatch extends Hyperdispatch {
+class ESMSpacedispatch extends Spacedispatch {
   static esm = true
 }
 
-export default ESMHyperdispatch
+export default ESMSpacedispatch

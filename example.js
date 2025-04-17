@@ -1,8 +1,8 @@
-const Hyperschema = require('hyperschema')
+const Spaceschema = require('spaceschema')
 
 const SCHEMA_DIR = './spec/hyperschema'
 
-const schema = Hyperschema.from(SCHEMA_DIR)
+const schema = Spaceschema.from(SCHEMA_DIR)
 const ns1 = schema.namespace('example')
 
 ns1.register({
@@ -22,14 +22,14 @@ ns1.register({
 })
 
 // Write the schema to disk
-Hyperschema.toDisk(schema)
+Spaceschema.toDisk(schema)
 
-const Hyperdispatch = require('hyperdispatch')
+const Spacedispatch = require('spacedispatch')
 
-const DISPATCH_DIR = './spec/hyperdispatch'
-const hyperdispatch = Hyperdispatch.from(SCHEMA_DIR, DISPATCH_DIR)
+const DISPATCH_DIR = './spec/spacedispatch'
+const spacedispatch = Spacedispatch.from(SCHEMA_DIR, DISPATCH_DIR)
 
-const ns2 = hyperdispatch.namespace('example')
+const ns2 = spacedispatch.namespace('example')
 
 // Define commands and associate them with requests
 ns2.register({
@@ -45,10 +45,10 @@ ns2.register({
   requestType: '@example/request2'
 })
 
-// Write the hyperdispatch configuration to disk
-Hyperdispatch.toDisk(hyperdispatch)
+// Write the spacedispatch configuration to disk
+Spacedispatch.toDisk(spacedispatch)
 
-const { Router, dispatch } = require('./spec/hyperdispatch')
+const { Router, dispatch } = require('./spec/spacedispatch')
 
 const router = new Router()
 

@@ -1,6 +1,6 @@
 const p = require('path')
 const fs = require('fs')
-const Hyperschema = require('hyperschema')
+const Spaceschema = require('spaceschema')
 
 const generateCode = require('./lib/codegen')
 
@@ -8,19 +8,19 @@ const CODE_FILE_NAME = 'index.js'
 const MESSAGES_FILE_NAME = 'messages.js'
 const DISPATCH_JSON_FILE_NAME = 'dispatch.json'
 
-class HyperdispatchNamespace {
-  constructor (hyperdispatch, name) {
-    this.hyperdispatch = hyperdispatch
+class SpacedispatchNamespace {
+  constructor (spacedispatch, name) {
+    this.spacedispatch = spacedispatch
     this.name = name
   }
 
   register (description) {
     const fqn = '@' + this.name + '/' + description.name
-    this.hyperdispatch.register(fqn, description)
+    this.spacedispatch.register(fqn, description)
   }
 }
 
-module.exports = class Hyperdispatch {
+module.exports = class Spacedispatch {
   constructor (schema, dispatchJson, { offset, dispatchDir = null, schemaDir = null } = {}) {
     this.schema = schema
     this.version = dispatchJson ? dispatchJson.version : 0
@@ -49,7 +49,7 @@ module.exports = class Hyperdispatch {
   static esm = false
 
   namespace (name) {
-    return new HyperdispatchNamespace(this, name)
+    return new SpacedispatchNamespace(this, name)
   }
 
   register (fqn, description) {
@@ -99,7 +99,7 @@ module.exports = class Hyperdispatch {
   }
 
   static from (schemaJson, dispatchJson, opts) {
-    const schema = Hyperschema.from(schemaJson)
+    const schema = Spaceschema.from(schemaJson)
     if (typeof dispatchJson === 'string') {
       const jsonFilePath = p.join(p.resolve(dispatchJson), DISPATCH_JSON_FILE_NAME)
       let exists = false
@@ -120,7 +120,7 @@ module.exports = class Hyperdispatch {
     return generateCode(this, { esm, filename })
   }
 
-  static toDisk (hyperdispatch, dispatchDir, opts = {}) {
+  static toDisk (spacedispatch, dispatchDir, opts = {}) {
     if (typeof dispatchDir === 'object' && dispatchDir) {
       opts = dispatchDir
       dispatchDir = null
@@ -128,15 +128,15 @@ module.exports = class Hyperdispatch {
     if (typeof opts.esm === 'undefined') {
       opts = { ...opts, esm: this.esm }
     }
-    if (!dispatchDir) dispatchDir = hyperdispatch.dispatchDir
+    if (!dispatchDir) dispatchDir = spacedispatch.dispatchDir
     fs.mkdirSync(dispatchDir, { recursive: true })
 
     const messagesPath = p.join(p.resolve(dispatchDir), MESSAGES_FILE_NAME)
     const dispatchJsonPath = p.join(p.resolve(dispatchDir), DISPATCH_JSON_FILE_NAME)
     const codePath = p.join(p.resolve(dispatchDir), CODE_FILE_NAME)
 
-    fs.writeFileSync(dispatchJsonPath, JSON.stringify(hyperdispatch.toJSON(), null, 2), { encoding: 'utf-8' })
-    fs.writeFileSync(messagesPath, hyperdispatch.schema.toCode(opts), { encoding: 'utf-8' })
-    fs.writeFileSync(codePath, generateCode(hyperdispatch, opts), { encoding: 'utf-8' })
+    fs.writeFileSync(dispatchJsonPath, JSON.stringify(spacedispatch.toJSON(), null, 2), { encoding: 'utf-8' })
+    fs.writeFileSync(messagesPath, spacedispatch.schema.toCode(opts), { encoding: 'utf-8' })
+    fs.writeFileSync(codePath, generateCode(spacedispatch, opts), { encoding: 'utf-8' })
   }
 }
